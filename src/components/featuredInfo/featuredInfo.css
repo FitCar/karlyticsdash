@@ -1,0 +1,14 @@
+.userInfo {
+  display: flex;
+  justify-content: space-around;
+}
+
+.serviceInfo {
+  display: flex;
+  margin-top: 20px;
+  justify-content: center;
+}
+
+.operationsInfo {
+  padding: 50px;
+}
