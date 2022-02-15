@@ -1,0 +1,5 @@
+.serviceInfoLabel {
+  display: flex;
+  width: 50vw;
+  justify-content: space-between;
+}

@@ -1,0 +1,10 @@
+.user {
+  flex: 4;
+}
+
+.userPages {
+  background-color: yellow;
+  height: 50vh;
+  width: 50vw;
+}
+

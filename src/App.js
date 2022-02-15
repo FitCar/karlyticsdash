@@ -1,24 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import SideBar from "./components/sideBar/SideBar";
+import TopBar from "./components/topBar/TopBar";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import Home from "./pages/home/Home";
+import UserList from "./pages/userList/UserList";
+import User from "./pages/user/User";
+import UserDashboard from "./pages/userDashboard/UserDashboard";
+import UserRequests from "./pages/userRequest/UserRequests";
+import Request from "./pages/request/Request";
+
+
+const test = process.env.REACT_API_KEY
+
+console.log(test)
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <TopBar />
+
+      <div className="container">
+        <SideBar />
+        <Routes>
+          <Route exact path="/" element={<Home />} />
+          <Route path="/userList" element={<UserList />} />
+          <Route path="/user/:userId" element={<User />} />
+          <Route path="/userDashboard" element={<UserDashboard />} />
+          <Route path="/userRequests/:userId" element={<UserRequests />} />
+          <Route path="/request/:customerId/:requestId" element={<Request />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

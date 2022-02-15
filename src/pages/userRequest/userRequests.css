@@ -1,0 +1,9 @@
+.userRequests {
+  flex: 4;
+}
+
+.requestList {
+  height: 200px;
+  width: 200px;
+  background-color: yellow
+}
