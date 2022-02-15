@@ -1,0 +1,10 @@
+.diagnosisReport {
+  margin-top: 10px;
+  width: 20vw;
+}
+
+.diagnosisReportItem {
+
+  margin-bottom: 10px;
+  background-color: yellow
+}
