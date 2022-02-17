@@ -13,10 +13,7 @@ export default function DiagnosticReport() {
   let pan = {};
 
   const runPan = (name, value) => {
-    console.log(name);
-    console.log(value);
-    pan[name] = value;
-    console.log(pan);
+      pan[name] = value;
   };
 
   const onValueChange = (e) => {
