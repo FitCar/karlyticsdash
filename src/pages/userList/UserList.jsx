@@ -35,9 +35,6 @@ export default function UserList() {
   };
 
   
-
-  console.log(users);
-
   const columns = [
     { field: "id", headerName: "ID", width: 150 },
     {
@@ -45,13 +42,6 @@ export default function UserList() {
       headerName: "Username",
       width: 150,
       editable: true,
-      // renderCell: (params) => {
-      //   return (
-      //     <div className="userListUser">
-      //       {params.row.name}
-      //     </div>
-      //   );
-      // },
     },
     {
       field: "email",

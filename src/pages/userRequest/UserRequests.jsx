@@ -40,6 +40,8 @@ export default function UserRequests() {
 
   return (
     <div className="userRequests">
+      {!requests.length && <p className="text-blue-500">No requests made yet</p> }
+
       {requests.map((requests) => {
         return (
           <RequestListItem
