@@ -1,13 +1,11 @@
 import { useParams } from "react-router-dom";
 import "./request.css";
-import firebase from "firebase";
-
+import firebaseApp from "../../firebase";
 import DiagnosticReport from "../../components/diagnosticReport/DiagnosticReport";
 import Quotation from "../../components/requestListItem/quotation/Quotation";
 import { useState } from "react";
 
-const db = firebase.firestore();
-const firestore = firebase.firestore();
+const firestore = firebaseApp.firestore();
 
 export default function Request() {
   

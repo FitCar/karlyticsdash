@@ -1,5 +1,5 @@
 import "./sideBar.css";
-import { LineStyle } from "@material-ui/icons";
+// import { LineStyle } from "@material-ui/icons";
 import { Link } from "react-router-dom";
 
 export default function SideBar() {
@@ -10,19 +10,18 @@ export default function SideBar() {
           <h3 className="sideBarTitle">Main Menu</h3>
           <ul className="sideBarList">
             <Link to="/">
-            <li className="sideBarListItem">
-              <LineStyle />
-              Home
-            </li>
+              <li className="sideBarListItem">
+                Home
+              </li>
             </Link>
+
             <Link to="/userList">
-            <li className="sideBarListItem">
-              <LineStyle />
-              Clients
-            </li>
+              <li className="sideBarListItem">
+                Clients
+              </li>
             </Link>
+            
             <li className="sideBarListItem">
-              <LineStyle />
               Service Providers
             </li>
           </ul>

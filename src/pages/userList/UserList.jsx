@@ -1,26 +1,12 @@
 import "./userList.css";
 
-import firebase from "../../firebase";
+import firebaseApp from "../../firebase";
 import { useEffect, useState } from "react";
 import { DataGrid } from "@material-ui/data-grid";
 import { Link } from "react-router-dom";
-import { DeleteOutline } from "@material-ui/icons";
+import { AiOutlineDelete } from "react-icons/ai";
 
-// const firebaseConfig = {
-//   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
-//   authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
-//   projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
-//   storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
-//   messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER,
-//   appId: process.env.REACT_APP_FIREBASE_APP_ID,
-//   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
-// };
-
-// if (firebase.apps.length === 0) {
-//   const firebaseApp = firebase.initializeApp(firebaseConfig);
-// }
-
-const firestore = firebase.firestore();
+const firestore = firebaseApp.firestore();
 
 export default function UserList() {
   const [users, setUsers] = useState([]);
