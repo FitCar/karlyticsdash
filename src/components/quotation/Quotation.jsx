@@ -7,7 +7,7 @@ const firestore = firebase.firestore();
 
 export default function Quotation() {
   const [quotes, setQuotes] = useState([
-    { index: 1, partNumber: "", description: "", qty: 0, unitPrice: 0, total: 0  }
+    { index: 1, partNumber: "", description: "", qty: "", unitPrice: "", total: ""  }
   ]);
   
   const id = useParams();
@@ -16,19 +16,27 @@ export default function Quotation() {
 
   const addItem = (e) => {
     e.preventDefault();
-    setQuotes([ ...quotes, { index: quotes.length+1, partNumber: "", description: "", qty: 0, unitPrice: 0, total: 0  } ])
+    setQuotes([ ...quotes, { index: quotes.length+1, partNumber: "", description: "", qty: "", unitPrice: "", total: "" } ])
   };
 
   
   const setItem = (e, num) => {
     const changedQuote = quotes.map(item => {
+      if(e.target.name === "qty" && Number.parseInt(e.target.value) === NaN ) return 
+      if(e.target.name === "unitPrice" && Number.parseInt(e.target.value) === NaN ) return
+
       return item.index === num ? { ...item, [e.target.name]: e.target.value } : { ...item }
     })
 
-    return setQuotes(changedQuote)
-  };
+    const calculatedQuote = changedQuote.map(item => {
+      let itemQty = Number.parseInt(item.qty) === NaN ? 0 : Number.parseInt(item.qty)
+      let itemunitPrice = Number.parseInt(item.unitPrice) === NaN ? 0 : Number.parseInt(item.unitPrice)
 
-  console.log(quotes)
+      return { ...item, total: (itemQty * itemunitPrice) }
+    })
+
+    return setQuotes(calculatedQuote)
+  };
 
   const sendQuotation = () => {
     const quotationRef = firestore
@@ -37,9 +45,10 @@ export default function Quotation() {
     .collection("Quotation")
     .doc(requestDoc);
 
-    quotationRef.set(quotes);
+    quotationRef.set({quotes});
   }
 
+  
   return (
     <div>
       <h3>Quotation</h3>
@@ -52,11 +61,11 @@ export default function Quotation() {
           {quotes.map((item) => {
             return (
               <div className="quotationList">
-                <input type="text" value={item.partNumber} name="partNumber" onChange={(e) => setItem(e, item.index)} />
-                <input type="text" value={item.description} name="description" onChange={(e) => setItem(e, item.index)} />
-                <input type="number" value={item.qty} name="qty" onChange={(e) => setItem(e, item.index)} />
-                <input type="number" value={item.unitPrice} name="unitPrice" onChange={(e) => setItem(e, item.index)} />
-                <input type="number" value={item.total} name="total" onChange={(e) => setItem(e, item.index)} />
+                <input type="text" placeholder="Part Number" value={item.partNumber} name="partNumber" onChange={(e) => setItem(e, item.index)} />
+                <input type="text" placeholder="Description" value={item.description} name="description" onChange={(e) => setItem(e, item.index)} />
+                <input type="number" placeholder="quantity" value={item.qty} name="qty" onChange={(e) => setItem(e, item.index)} />
+                <input type="number" placeholder="Unit price" value={item.unitPrice} name="unitPrice" onChange={(e) => setItem(e, item.index)} />
+                <input type="number" placeholder="Total" value={item.total} name="total" disabled  />
               </div>
             );
           })}

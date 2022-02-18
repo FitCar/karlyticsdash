@@ -42,7 +42,6 @@ export default function DiagnosticReport() {
     return setloading(false)
   }, [])
 
-  console.log(report)
 
   const onSubmitReport = (e) => {
     e.preventDefault();
