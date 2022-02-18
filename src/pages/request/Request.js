@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import "./request.css";
 import firebaseApp from "../../firebase";
 import DiagnosticReport from "../../components/diagnosticReport/DiagnosticReport";
-import Quotation from "../../components/requestListItem/quotation/Quotation";
+import Quotation from "../../components/quotation/Quotation";
 import { useEffect, useState } from "react";
 
 const firestore = firebaseApp.firestore();
