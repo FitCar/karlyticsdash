@@ -34,7 +34,7 @@ export default function DiagnosticReport() {
     
     const fetched_report = await reportRef.get()
 
-    if(fetched_report.data() === {}) return 
+    if(!fetched_report.data()) return setloading(false) 
 
     setreportAvailable(true)
     setReport(fetched_report.data())

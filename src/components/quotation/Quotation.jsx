@@ -2,6 +2,7 @@ import { useState } from "react";
 import "./quotation.css";
 import { useParams } from "react-router-dom";
 import firebase from "firebase";
+import { useEffect } from "react";
 
 const firestore = firebase.firestore();
 
@@ -9,6 +10,9 @@ export default function Quotation() {
   const [quotes, setQuotes] = useState([
     { index: 1, partNumber: "", description: "", qty: "", unitPrice: "", total: ""  }
   ]);
+
+  const [loading, setloading] = useState(false)
+  const [quotationAvailable, setquotationAvailable] = useState(false)
   
   const id = useParams();
   const requestDoc = id.requestId;
@@ -19,7 +23,25 @@ export default function Quotation() {
     setQuotes([ ...quotes, { index: quotes.length+1, partNumber: "", description: "", qty: "", unitPrice: "", total: "" } ])
   };
 
+  useEffect(async () => {
+    setloading(true)
+
+    const quotationRef = firestore
+    .collection("Quotation")
+    .doc(customerDoc)
+    .collection("Quotation")
+    .doc(requestDoc);
+
+    const quotations = await quotationRef.get()
+
+    if(!quotations.data()) return setloading(false)
+
+    setQuotes(quotations.data().quotes)
+    setquotationAvailable(true)
+    return setloading(false)
   
+  }, [])
+
   const setItem = (e, num) => {
     const changedQuote = quotes.map(item => {
       if(e.target.name === "qty" && Number.parseInt(e.target.value) === NaN ) return 
@@ -48,7 +70,8 @@ export default function Quotation() {
     quotationRef.set({quotes});
   }
 
-  
+  if(loading) return <p>Getting Quotations...</p>
+
   return (
     <div>
       <h3>Quotation</h3>
@@ -74,7 +97,7 @@ export default function Quotation() {
       </div>
 
       <div className="quotationSend">
-        <button onClick={sendQuotation}>Send Quotation</button>
+        <button onClick={sendQuotation}>{!quotationAvailable ? "Send Quotation" : "Edit Quotation"}</button>
       </div>
     </div>
   );

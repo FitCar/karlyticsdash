@@ -36,7 +36,6 @@ export default function UserRequests() {
       });
   }, []);
 
-  console.log(requests);
 
   return (
     <div className="userRequests">
