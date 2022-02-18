@@ -42,7 +42,7 @@ export default function Request() {
     <div className="request">
       <div className="flex items-center">
         <p>Request</p>
-        {status === "Confirmed" ? <p className="text-green-400">Request has been confirmed</p> : <button onClick={updateStatus("Confirmed")}>Confirm</button>}
+        {status === "Confirmed" ? <p className="confirmed">Request has been confirmed</p> : <button onClick={updateStatus("Confirmed")}>Confirm</button>}
       </div>
       
       
