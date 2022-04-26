@@ -78,8 +78,8 @@ export default function Request() {
           <input type="submit" />
         </form>
 
-       <DiagnosticReport />
-       <Quotation />
+       <DiagnosticReport currentPushToken={currentPushToken} reqData={reqData} />
+       <Quotation currentPushToken={currentPushToken} reqData={reqData} />
       </div>
     </div>
   );

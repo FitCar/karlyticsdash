@@ -3,10 +3,11 @@ import "./quotation.css";
 import { useParams } from "react-router-dom";
 import firebase from "firebase";
 import { useEffect } from "react";
+import { sendPushNotifications } from "../../notificationConfig";
 
 const firestore = firebase.firestore();
 
-export default function Quotation() {
+export default function Quotation({ currentPushToken, reqData }) {
   const [quotes, setQuotes] = useState([
     { index: 1, partNumber: "", description: "", qty: "", unitPrice: "", total: ""  }
   ]);
@@ -68,6 +69,8 @@ export default function Quotation() {
     .doc(requestDoc);
 
     quotationRef.set({quotes});
+
+    return sendPushNotifications(currentPushToken, "quotation", reqData)
   }
 
   if(loading) return <p>Getting Quotations...</p>
@@ -97,7 +100,7 @@ export default function Quotation() {
       </div>
 
       <div className="quotationSend">
-        <button onClick={sendQuotation}>{!quotationAvailable ? "Send Quotation" : "Edit Quotation"}</button>
+        <button onClick={() => sendQuotation()}>{!quotationAvailable ? "Send Quotation" : "Edit Quotation"}</button>
       </div>
     </div>
   );

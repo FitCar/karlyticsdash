@@ -3,21 +3,21 @@ export const sendPushNotifications = async (pushToken, type, details) =>{
     if(type === "request confirmed") {
         notification_data = {
             to: pushToken,
-            data: { extraData: 'Some data' },
+            data: { data: details },
             title: 'Karlytics',
             body: `Your ${details.requestType} Request for ${details.Car} has been confirmed`
         } 
     }else if(type === "quotation") {
         notification_data = {
             to: pushToken,
-            data: { extraData: 'Some data' },
+            data: { data: details },
             title: 'Karlytics',
             body: `New Quotation for ${details.Car} is available`
         }
     }else {
         notification_data = {
             to: pushToken,
-            data: { extraData: 'Some data' },
+            data: { data: details },
             title: 'Karlytics',
             body: `New Diagnostic Report on ${details.Car} for the ${details.requestType} request is available`
         }
