@@ -2,6 +2,7 @@
   "name": "karlyticsdash",
   "version": "0.1.0",
   "private": true,
+
   "dependencies": {
     "@material-ui/core": "^4.12.3",
     "@material-ui/data-grid": "^4.0.0-alpha.37",
@@ -9,6 +10,8 @@
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "autoprefixer": "^10.4.2",
+    "axios": "^0.26.1",
+    "expo-server-sdk": "^3.6.0",
     "firebase": "8.2.3",
     "postcss": "^8.4.6",
     "react": "^17.0.2",
