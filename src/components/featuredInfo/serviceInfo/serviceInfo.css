@@ -1,5 +1,17 @@
+.serviceInfoHeader {
+  color: darkslategray;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
 .serviceInfoLabel {
   display: flex;
   width: 50vw;
   justify-content: space-between;
+}
+
+.serviceInfoLabel > h3 {
+  font-size: 1rem;
+  font-weight: 500;
+  color: slategray;
 }

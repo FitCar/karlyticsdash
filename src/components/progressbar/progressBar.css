@@ -1,11 +1,13 @@
 .progressBar {
   height: 10px;
   width: 50vw;
-  background-color: green;
+  background-color: red;
+  border-radius: 5px;
 }
 
 .progressBarFill {
- width: 30%;
- background-color: red;
+ width: 40%;
+ background-color: green;
  height: 10px;
+ border-radius: 5px;
 }

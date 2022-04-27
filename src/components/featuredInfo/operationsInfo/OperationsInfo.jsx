@@ -4,6 +4,7 @@ export default function OperationsInfo() {
     <div className="operationInfo">
       <div className="operationsInfoContainer">
         <span className="operationsInfoTitle">Requests</span>
+       
         <ul className="operationsInfoRequestData">
           <li>Total:</li>
           <li>Confirmed:</li>
@@ -11,8 +12,10 @@ export default function OperationsInfo() {
           <li>Completed:</li>
         </ul>
       </div>
+
       <div className="operationsInfoContainer">
         <span className="operationsInfoTitle">Subscriptions</span>
+       
         <ul className="operationsInfoRequestData">
           <li>Free:</li>
           <li>Savvy Driver:</li>

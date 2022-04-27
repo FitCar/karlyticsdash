@@ -1,3 +1,8 @@
+.featuredInfo{
+  background-color: whitesmoke;
+  padding: 1rem 2rem;
+  height: 100%;
+}
 .userInfo {
   display: flex;
   justify-content: space-around;
