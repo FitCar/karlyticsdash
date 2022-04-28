@@ -9,6 +9,23 @@
   background-color: white;
 }
 
+.operationsInfoTitle {
+  font-size: 1.1rem;
+  color: slategray;
+  font-weight: 300;
+}
+
+.operationsInfoRequestData {
+  list-style: none;
+  padding: 0;
+}
+
+.operationsInfoRequestData > li {
+  font-size: 1rem;
+  font-weight: 500;
+  color: darkslategray;
+}
+
 .operationInfo {
   display: flex;
   justify-content: space-around;

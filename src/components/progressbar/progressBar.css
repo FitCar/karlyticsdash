@@ -6,7 +6,6 @@
 }
 
 .progressBarFill {
- width: 40%;
  background-color: green;
  height: 10px;
  border-radius: 5px;
