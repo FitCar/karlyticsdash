@@ -15,6 +15,11 @@ export default function Request() {
   const [status, setstatus] = useState("")
   const [reqData, setreqData] = useState(null)
   const [currentPushToken, setCurrentPushToken] = useState(null)
+  
+  const [healthScoreInputs, sethealthScoreInputs] = useState({
+    inspectionVal: "",
+    diagnosticVal: "",
+  })
 
   const getPushToken = async () => {
     const current_user = await firestore.collection("users").doc(id.customerId).get()
@@ -54,6 +59,19 @@ export default function Request() {
     
   };
 
+  const sendHealthScore = (e) => {
+    e.preventDefault()
+
+    //do something ...
+  }
+
+  const handleInputChange = (e) => {
+    sethealthScoreInputs({
+      ...healthScoreInputs,
+      [e.target.name]: e.target.value
+    })
+  }
+
   return (
     <div className="request">
       <div className="flex items-center">
@@ -79,6 +97,16 @@ export default function Request() {
         </form>
 
        <DiagnosticReport currentPushToken={currentPushToken} reqData={reqData} />
+
+        <form className="healthScoreForm">
+          <h3>Health Value</h3>
+
+          <input type="text" placeholder="Inspection score" name="inspectionVal" value={healthScoreInputs.inspectionVal} onChange={handleInputChange} />
+          <input type="text" placeholder="Diagnostic score" name="diagnosticVal" value={healthScoreInputs.diagnosticVal} onChange={handleInputChange} />
+
+          <button onClick={sendHealthScore}>Compute health score</button>
+        </form>
+
        <Quotation currentPushToken={currentPushToken} reqData={reqData} />
       </div>
     </div>
