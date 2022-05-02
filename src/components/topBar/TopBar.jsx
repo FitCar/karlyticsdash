@@ -5,7 +5,7 @@ export default function TopBar() {
   return (
     <div className="topBar">
       <div className="topBarLeft">
-        <span className="topBarLogoText">KarLytics</span>
+        <span className="topBarLogoText">Karlytics</span>
       </div>
       <div className="topBarRight">
         <div className="topBarIconContainer">

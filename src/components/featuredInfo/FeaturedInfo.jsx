@@ -10,6 +10,7 @@ const firestore = firebaseApp.firestore()
 export default function FeaturedInfo() {
   const [users, setusers] = useState([])
   const [garage, setgarage] = useState([])
+  const [plans, setplans] = useState([])
   const [requests, setrequests] = useState([])
   const [needServicing, setneedServicing] = useState([])
   const [doNotNeedServicing, setdoNotNeedServicing] = useState([])
@@ -31,6 +32,12 @@ export default function FeaturedInfo() {
       setrequests(data.docs.map(doc => doc.data()))
     })
 
+    firestore.collectionGroup("Plans").get().then(data => {
+      setplans(data.docs.map(doc => { 
+        return { Id: doc.id,  data: doc.data() } 
+      }))
+    })
+
   } ,[users])
 
   useEffect(() => {
@@ -41,7 +48,7 @@ export default function FeaturedInfo() {
     setdoNotNeedServicing(garage.filter(car => new Date(car.nextServiceDate).getTime() > today ))
 
   }, [garage])
-
+  
 
   return (
     <div className="featuredInfo">
@@ -55,7 +62,7 @@ export default function FeaturedInfo() {
       </div>
       
       <div className="operationsInfo">
-        <OperationsInfo requests={requests} />
+        <OperationsInfo requests={requests} plans={plans} users={users} />
       </div>
     </div>
   )
