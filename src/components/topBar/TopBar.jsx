@@ -1,5 +1,5 @@
 import "./topBar.css";
-import NotificationsNoneOutlinedIcon from "@material-ui/icons/NotificationsNoneOutlined";
+import { IoNotificationsSharp } from "react-icons/io5";
 
 export default function TopBar() {
   return (
@@ -9,7 +9,7 @@ export default function TopBar() {
       </div>
       <div className="topBarRight">
         <div className="topBarIconContainer">
-          <NotificationsNoneOutlinedIcon />
+          <IoNotificationsSharp />
         </div>
       </div>
     </div>

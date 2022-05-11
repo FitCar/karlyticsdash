@@ -1,5 +1,5 @@
 import './customerInfo.css'
-import { ArrowDownward, ArrowUpward } from "@material-ui/icons";
+import { MdOutlineKeyboardArrowDown, MdOutlineKeyboardArrowUp } from "react-icons/md";
 
 export default function CustomerInfo({title, stats}) {
   return (
@@ -7,7 +7,7 @@ export default function CustomerInfo({title, stats}) {
       <span className="customerInfoTitle">{title}</span>
       <div className="customerInfoStats">
         {stats}
-        <ArrowUpward className="customerInfoStatsIcon" />
+        <MdOutlineKeyboardArrowDown />
       </div>
     </div>
   )

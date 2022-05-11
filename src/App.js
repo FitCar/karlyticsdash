@@ -10,10 +10,6 @@ import UserRequests from "./pages/userRequest/UserRequests";
 import Request from "./pages/request/Request";
 
 
-const test = process.env.REACT_API_KEY
-
-console.log(test)
-
 function App() {
   return (
     <Router>
