@@ -4,7 +4,7 @@ import { MdOutlineKeyboardArrowDown, MdOutlineKeyboardArrowUp } from "react-icon
 export default function CustomerInfo({title, stats}) {
   return (
     <div className="customerInfo">
-      <span className="customerInfoTitle">{title}</span>
+      <h3 className="customerInfoTitle">{title}</h3>
       <div className="customerInfoStats">
         {stats}
         <MdOutlineKeyboardArrowDown />

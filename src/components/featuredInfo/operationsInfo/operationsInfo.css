@@ -3,7 +3,27 @@
   flex: 1;
   -webkit-box-shadow: 0px 0px 15px -10px #000000;
   box-shadow: 0px 0px 15px -10px #000000;
-  
+  max-width: 22rem;
+  border-radius: 8px;
+  padding: 1rem;
+  background-color: white;
+}
+
+.operationsInfoTitle {
+  font-size: 1.1rem;
+  color: slategray;
+  font-weight: 300;
+}
+
+.operationsInfoRequestData {
+  list-style: none;
+  padding: 0;
+}
+
+.operationsInfoRequestData > li {
+  font-size: 1rem;
+  font-weight: 500;
+  color: darkslategray;
 }
 
 .operationInfo {

@@ -7,7 +7,6 @@ export default function SideBar() {
     <div className="sideBar">
       <div className="sideBarWrapper">
         <div className="sideBarMenu">
-          <h3 className="sideBarTitle">Main Menu</h3>
           <ul className="sideBarList">
             <Link to="/">
               <li className="sideBarListItem">
