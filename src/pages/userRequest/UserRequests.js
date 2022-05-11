@@ -1,8 +1,7 @@
 import "./userRequests.css";
 import firebase from "firebase";
 import { useEffect, useState } from "react";
-import { DataGrid } from "@material-ui/data-grid";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import RequestListItem from "../../components/requestListItem/RequestListItem";
 
 const db = firebase.firestore();
@@ -11,7 +10,6 @@ const firestore = firebase.firestore();
 export default function UserRequests() {
   const userId = useParams();
   const doc = userId.userId;
-  console.log(doc);
 
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true); // Set loading to true on component mount

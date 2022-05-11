@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import firebase from "firebase";
 import { useParams } from "react-router-dom";
 import { reportData } from "./diagnosticData";
+import { sendPushNotifications } from "../../notificationConfig";
 
 const firestore = firebase.firestore();
-export default function DiagnosticReport() {
+export default function DiagnosticReport({ currentPushToken, reqData }) {
 
   const [report, setReport] = useState(reportData);
   const [reportAvailable, setreportAvailable] = useState(false)
@@ -52,6 +53,8 @@ export default function DiagnosticReport() {
       .doc(requestDoc);
 
     reportRef.set(report);
+
+    return sendPushNotifications(currentPushToken, "diagnostic", reqData)
   };
 
 
