@@ -7,42 +7,86 @@ import { reportData } from "./diagnosticData";
 import { sendPushNotifications } from "../../notificationConfig";
 
 const firestore = firebase.firestore();
-export default function DiagnosticReport({ currentPushToken, reqData }) {
-
+export default function DiagnosticReport({
+  currentPushToken,
+  reqData,
+  sethealthScoreInputs,
+  healthScoreInputs,
+}) {
   const [report, setReport] = useState(reportData);
-  const [reportAvailable, setreportAvailable] = useState(false)
-  const [loading, setloading] = useState(false)
+  const [reportAvailable, setreportAvailable] = useState(false);
+  const [loading, setloading] = useState(false);
+  const [score, setscore] = useState([]);
 
   const id = useParams();
 
   const requestDoc = id.requestId;
   const customerDoc = id.customerId;
-  
-  const onValueChange = (e) => {
-    setReport({
-      ...report,
-      [e.target.name]: e.target.value
-    })
+
+  const calculateSum = (arr) => {
+    let sum = 0;
+
+    arr.forEach((x) => {
+      let values = Object.values(x);
+      sum += values[0];
+    });
+
+    return sum;
   };
 
-  useEffect(async () =>{
-    setloading(true)
+  const getScore = (key, val) => {
+    let keys = [];
+
+    score.forEach((element) => {
+      if (!element[key]) {
+        keys.push(element);
+      }
+    });
+
+    if (val === "Bad") {
+      setscore([...keys, { [key]: 25 }]);
+    } else if (val === "Good") {
+      setscore([...keys, { [key]: 70 }]);
+    } else {
+      setscore([...keys, { [key]: 95 }]);
+    }
+  };
+
+  const onValueChange = (e) => {
+    getScore(e.target.name, e.target.value);
+
+    setReport({
+      ...report,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  useEffect(() => {
+    sethealthScoreInputs({
+      ...healthScoreInputs,
+      diagnosticVal: `${Number.parseInt(calculateSum(score) / score.length)}`,
+    });
+  }, [score]);
+
+  useEffect(async () => {
+    setloading(true);
     const reportRef = firestore
-    .collection("Report")
-    .doc(customerDoc)
-    .collection("Report")
-    .doc(requestDoc)
-    
-    const fetched_report = await reportRef.get()
+      .collection("Report")
+      .doc(customerDoc)
+      .collection("Report")
+      .doc(requestDoc);
 
-    if(!fetched_report.data()) return setloading(false) 
+    const fetched_report = await reportRef.get();
 
-    setreportAvailable(true)
-    setReport(fetched_report.data())
+    if (!fetched_report.data()) return setloading(false);
 
-    return setloading(false)
-  }, [])
+    setreportAvailable(true);
+    setReport(fetched_report.data());
 
+    return setloading(false);
+  }, []);
+
+  console.log(score);
 
   const onSubmitReport = (e) => {
     e.preventDefault();
@@ -54,11 +98,10 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
 
     reportRef.set(report);
 
-    return sendPushNotifications(currentPushToken, "diagnostic", reqData)
+    return sendPushNotifications(currentPushToken, "diagnostic", reqData);
   };
 
-
-  if(loading) return <p>loading report ...</p>
+  if (loading) return <p>loading report ...</p>;
 
   return (
     <div>
@@ -77,7 +120,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="fuelDoorRelease"
                     id="excellent"
                     value="Excellent"
-                    checked={report.fuelDoorRelease === 'excellent'}
+                    checked={report.fuelDoorRelease === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -86,7 +129,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="fuelDoorRelease"
                     id="good"
                     value="Good"
-                    checked={report.fuelDoorRelease === 'Good'}
+                    checked={report.fuelDoorRelease === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -95,7 +138,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="fuelDoorRelease"
                     id="bad"
                     value="Bad"
-                    checked={report.fuelDoorRelease === 'Bad'}
+                    checked={report.fuelDoorRelease === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -110,7 +153,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="hoodRelease"
                     id="excellent"
                     value="Excellent"
-                    checked={report.hoodRelease === 'excellent'}
+                    checked={report.hoodRelease === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -119,7 +162,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="hoodRelease"
                     id="good"
                     value="Good"
-                    checked={report.hoodRelease === 'Good'}
+                    checked={report.hoodRelease === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -128,7 +171,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="hoodRelease"
                     id="bad"
                     value="Bad"
-                    checked={report.hoodRelease === 'Bad'}
+                    checked={report.hoodRelease === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -143,7 +186,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="trunkRelease"
                     id="excellent"
                     value="Excellent"
-                    checked={report.trunkRelease === 'excellent'}
+                    checked={report.trunkRelease === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -152,7 +195,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="trunkRelease"
                     id="good"
                     value="Good"
-                    checked={report.trunkRelease === 'Good'}
+                    checked={report.trunkRelease === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -161,7 +204,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="trunkRelease"
                     id="bad"
                     value="Bad"
-                    checked={report.trunkRelease === 'Bad'}
+                    checked={report.trunkRelease === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -176,7 +219,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="airBags"
                     id="excellent"
                     value="Excellent"
-                    checked={report.airBags === 'excellent'}
+                    checked={report.airBags === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -185,7 +228,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="airBags"
                     id="good"
                     value="Good"
-                    checked={report.airBags === 'Good'}
+                    checked={report.airBags === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -194,7 +237,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="airBags"
                     id="bad"
                     value="Bad"
-                    checked={report.airBags === 'Bad'}
+                    checked={report.airBags === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -209,7 +252,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="steeringWheels"
                     id="excellent"
                     value="Excellent"
-                    checked={report.steeringWheels === 'excellent'}
+                    checked={report.steeringWheels === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -218,7 +261,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="steeringWheels"
                     id="good"
                     value="Good"
-                    checked={report.steeringWheels === 'Good'}
+                    checked={report.steeringWheels === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -227,7 +270,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="steeringWheels"
                     id="bad"
                     value="Bad"
-                    checked={report.steeringWheels === 'Bad'}
+                    checked={report.steeringWheels === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -242,7 +285,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="horn"
                     id="excellent"
                     value="Excellent"
-                    checked={report.horn === 'excellent'}
+                    checked={report.horn === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -251,7 +294,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="horn"
                     id="good"
                     value="Good"
-                    checked={report.horn === 'Good'}
+                    checked={report.horn === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -260,7 +303,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="horn"
                     id="bad"
                     value="Bad"
-                    checked={report.horn === 'Bad'}
+                    checked={report.horn === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -275,7 +318,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="wiperControls"
                     id="excellent"
                     value="Excellent"
-                    checked={report.wiperControls === 'excellent'}
+                    checked={report.wiperControls === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -284,7 +327,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="wiperControls"
                     id="good"
                     value="Good"
-                    checked={report.wiperControls === 'Good'}
+                    checked={report.wiperControls === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -293,7 +336,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="wiperControls"
                     id="bad"
                     value="Bad"
-                    checked={report.wiperControls === 'Bad'}
+                    checked={report.wiperControls === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -308,7 +351,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="washerControls"
                     id="excellent"
                     value="Excellent"
-                    checked={report.washerControls === 'excellent'}
+                    checked={report.washerControls === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -317,7 +360,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="washerControls"
                     id="good"
                     value="Good"
-                    checked={report.washerControls === 'Good'}
+                    checked={report.washerControls === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -326,7 +369,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="washerControls"
                     id="bad"
                     value="Bad"
-                    checked={report.washerControls === 'Bad'}
+                    checked={report.washerControls === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -341,7 +384,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="ac"
                     id="excellent"
                     value="Excellent"
-                    checked={report.ac === 'excellent'}
+                    checked={report.ac === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -350,7 +393,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="ac"
                     id="good"
                     value="Good"
-                    checked={report.ac === 'Good'}
+                    checked={report.ac === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -359,12 +402,11 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="ac"
                     id="bad"
                     value="Bad"
-                    checked={report.ac === 'Bad'}
+                    checked={report.ac === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
                 </div>
-
               </div>
             </Collapsible>
           </div>
@@ -381,7 +423,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="windShield"
                     id="excellent"
                     value="Excellent"
-                    checked={report.windShield === 'excellent'}
+                    checked={report.windShield === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -390,7 +432,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="windShield"
                     id="good"
                     value="Good"
-                    checked={report.windShield === 'Good'}
+                    checked={report.windShield === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -399,7 +441,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="windShield"
                     id="bad"
                     value="Bad"
-                    checked={report.windShield === 'Bad'}
+                    checked={report.windShield === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -414,7 +456,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="wiper"
                     id="excellent"
                     value="excellent"
-                    checked={report.wiper === 'excellent'}
+                    checked={report.wiper === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -423,7 +465,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="wiper"
                     id="good"
                     value="Good"
-                    checked={report.wiper === 'Good'}
+                    checked={report.wiper === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="Good">Good</label>
@@ -432,7 +474,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="wiper"
                     id="bad"
                     value="Bad"
-                    checked={report.wiper === 'Bad'}
+                    checked={report.wiper === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -447,7 +489,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="sideMirrors"
                     id="excellent"
                     value="excellent"
-                    checked={report.sideMirrors === 'excellent'}
+                    checked={report.sideMirrors === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -456,7 +498,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="sideMirrors"
                     id="good"
                     value="Good"
-                    checked={report.sideMirrors === 'Good'}
+                    checked={report.sideMirrors === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -465,7 +507,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="sideMirrors"
                     id="bad"
                     value="Bad"
-                    checked={report.sideMirrors === 'Bad'}
+                    checked={report.sideMirrors === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -480,7 +522,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="headLights"
                     id="excellent"
                     value="excellent"
-                    checked={report.headLight === 'excellent'}
+                    checked={report.headLight === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -489,7 +531,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="headLights"
                     id="good"
                     value="Good"
-                    checked={report.headLight === 'Good'}
+                    checked={report.headLight === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -498,7 +540,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="headLights"
                     id="bad"
                     value="Bad"
-                    checked={report.headLight === 'Bad'}
+                    checked={report.headLight === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -513,7 +555,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="turnSignals"
                     id="excellent"
                     value="excellent"
-                    checked={report.turnSignals === 'excellent'}
+                    checked={report.turnSignals === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -522,7 +564,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="turnSignals"
                     id="good"
                     value="Good"
-                    checked={report.turnSignals === 'Good'}
+                    checked={report.turnSignals === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -531,7 +573,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="turnSignals"
                     id="bad"
                     value="Bad"
-                    checked={report.turnSignals === 'Bad'}
+                    checked={report.turnSignals === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -546,7 +588,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="tailLights"
                     id="excellent"
                     value="excellent"
-                    checked={report.tailLights === 'excellent'}
+                    checked={report.tailLights === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -555,7 +597,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="tailLights"
                     id="good"
                     value="Good"
-                    checked={report.tailLights === 'Good'}
+                    checked={report.tailLights === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -564,7 +606,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="tailLights"
                     id="bad"
                     value="Bad"
-                    checked={report.tailLights === 'Bad'}
+                    checked={report.tailLights === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -579,7 +621,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="brakeLights"
                     id="excellent"
                     value="excellent"
-                    checked={report.brakeLights === 'excellent'}
+                    checked={report.brakeLights === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -588,7 +630,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="brakeLights"
                     id="good"
                     value="Good"
-                    checked={report.brakeLights === 'Good'}
+                    checked={report.brakeLights === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -597,7 +639,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="brakeLights"
                     id="bad"
                     value="Bad"
-                    checked={report.brakeLights === 'Bad'}
+                    checked={report.brakeLights === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -612,7 +654,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="reverseLights"
                     id="excellent"
                     value="excellent"
-                    checked={report.reverseLights === 'excellent'}
+                    checked={report.reverseLights === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -621,7 +663,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="reverseLights"
                     id="good"
                     value="Good"
-                    checked={report.reverseLights === 'Good'}
+                    checked={report.reverseLights === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -630,7 +672,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="reverseLights"
                     id="bad"
                     value="Bad"
-                    checked={report.reverseLights === 'Bad'}
+                    checked={report.reverseLights === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -645,7 +687,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="frontBumper"
                     id="excellent"
                     value="excellent"
-                    checked={report.frontBumper === 'excellent'}
+                    checked={report.frontBumper === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -654,7 +696,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="frontBumper"
                     id="good"
                     value="Good"
-                    checked={report.frontBumper === 'Good'}
+                    checked={report.frontBumper === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -663,7 +705,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="frontBumper"
                     id="bad"
                     value="Bad"
-                    checked={report.frontBumper === 'Bad'}
+                    checked={report.frontBumper === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -678,7 +720,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="rearBumper"
                     id="excellent"
                     value="excellent"
-                    checked={report.rearBumper === 'excellent'}
+                    checked={report.rearBumper === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -687,7 +729,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="rearBumper"
                     id="good"
                     value="Good"
-                    checked={report.rearBumper === 'Good'}
+                    checked={report.rearBumper === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -696,16 +738,15 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="rearBumper"
                     id="bad"
                     value="Bad"
-                    checked={report.rearBumper === 'Bad'}
+                    checked={report.rearBumper === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
                 </div>
-
               </div>
             </Collapsible>
           </div>
-          
+
           <div className="diagnosisReportItem">
             <Collapsible trigger="Tires">
               <div className="newDiagnosisItem">
@@ -718,7 +759,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="alignment"
                     id="excellent"
                     value="excellent"
-                    checked={report.alignment === 'excellent'}
+                    checked={report.alignment === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -727,7 +768,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="alignment"
                     id="good"
                     value="Good"
-                    checked={report.alignment === 'Good'}
+                    checked={report.alignment === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -736,7 +777,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="alignment"
                     id="bad"
                     value="Bad"
-                    checked={report.alignment === 'Bad'}
+                    checked={report.alignment === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -751,7 +792,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="leftFrontTire"
                     id="excellent"
                     value="excellent"
-                    checked={report.leftFrontTire === 'excellent'}
+                    checked={report.leftFrontTire === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -760,7 +801,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="leftFrontTire"
                     id="good"
                     value="Good"
-                    checked={report.leftFrontTire === 'Good'}
+                    checked={report.leftFrontTire === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -769,7 +810,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="leftFrontTire"
                     id="bad"
                     value="Bad"
-                    checked={report.leftFrontTire === 'Bad'}
+                    checked={report.leftFrontTire === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -784,7 +825,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="leftRearTire"
                     id="excellent"
                     value="excellent"
-                    checked={report.leftRearTire === 'excellent'}
+                    checked={report.leftRearTire === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -793,7 +834,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="leftRearTire"
                     id="good"
                     value="Good"
-                    checked={report.leftRearTire === 'Good'}
+                    checked={report.leftRearTire === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -802,7 +843,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="leftRearTire"
                     id="bad"
                     value="Bad"
-                    checked={report.leftRearTire === 'Bad'}
+                    checked={report.leftRearTire === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -817,7 +858,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="rightFrontTire"
                     id="excellent"
                     value="excellent"
-                    checked={report.rightFrontTire === 'excellent'}
+                    checked={report.rightFrontTire === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -826,7 +867,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="rightFrontTire"
                     id="good"
                     value="Good"
-                    checked={report.rightFrontTire === 'Good'}
+                    checked={report.rightFrontTire === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -835,7 +876,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="rightFrontTire"
                     id="bad"
                     value="Bad"
-                    checked={report.rightFrontTire === 'Bad'}
+                    checked={report.rightFrontTire === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -850,7 +891,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="rightRearTire"
                     id="excellent"
                     value="excellent"
-                    checked={report.rightRearTire === 'excellent'}
+                    checked={report.rightRearTire === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -859,7 +900,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="rightRearTire"
                     id="good"
                     value="Good"
-                    checked={report.rightRearTire === 'Good'}
+                    checked={report.rightRearTire === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -868,7 +909,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="rightRearTire"
                     id="bad"
                     value="Bad"
-                    checked={report.rightRearTire === 'Bad'}
+                    checked={report.rightRearTire === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -883,7 +924,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="spareTire"
                     id="excellent"
                     value="excellent"
-                    checked={report.spareTire === 'excellent'}
+                    checked={report.spareTire === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -892,7 +933,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="spareTire"
                     id="good"
                     value="Good"
-                    checked={report.spareTire === 'Good'}
+                    checked={report.spareTire === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -901,21 +942,19 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="spareTire"
                     id="bad"
                     value="Bad"
-                    checked={report.spareTire === 'Bad'}
+                    checked={report.spareTire === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
                 </div>
-
-
               </div>
             </Collapsible>
           </div>
-         
+
           <div className="diagnosisReportItem">
             <Collapsible trigger="Underhood">
               <div className="newDiagnosisItem">
-              <div>
+                <div>
                   <span>Engine Oil</span>
                 </div>
                 <div className="reportItem">
@@ -924,7 +963,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="engineOil"
                     id="excellent"
                     value="excellent"
-                    checked={report.engineOil === 'excellent'}
+                    checked={report.engineOil === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -933,7 +972,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="engineOil"
                     id="good"
                     value="Good"
-                    checked={report.engineOil === 'Good'}
+                    checked={report.engineOil === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -942,7 +981,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="engineOil"
                     id="bad"
                     value="Bad"
-                    checked={report.engineOil === 'Bad'}
+                    checked={report.engineOil === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -957,7 +996,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="brakeFluid"
                     id="excellent"
                     value="excellent"
-                    checked={report.breakFluid === 'excellent'}
+                    checked={report.breakFluid === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -966,7 +1005,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="brakeFluid"
                     id="good"
                     value="Good"
-                    checked={report.breakFluid === 'Good'}
+                    checked={report.breakFluid === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -975,7 +1014,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="brakeFluid"
                     id="bad"
                     value="Bad"
-                    checked={report.breakFluid === 'Bad'}
+                    checked={report.breakFluid === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -990,7 +1029,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="coolant"
                     id="excellent"
                     value="excellent"
-                    checked={report.coolant === 'excellent'}
+                    checked={report.coolant === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -999,7 +1038,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="coolant"
                     id="good"
                     value="Good"
-                    checked={report.coolant === 'Good'}
+                    checked={report.coolant === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -1008,7 +1047,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="coolant"
                     id="bad"
                     value="Bad"
-                    checked={report.coolant === 'Bad'}
+                    checked={report.coolant === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -1023,7 +1062,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="powerSteeringFluid"
                     id="excellent"
                     value="excellent"
-                    checked={report.powerSteeringFluid === 'excellent'}
+                    checked={report.powerSteeringFluid === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -1032,7 +1071,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="powerSteeringFluid"
                     id="good"
                     value="Good"
-                    checked={report.powerSteeringFluid === 'Good'}
+                    checked={report.powerSteeringFluid === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -1041,7 +1080,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="powerSteeringFluid"
                     id="bad"
                     value="Bad"
-                    checked={report.powerSteeringFluid === 'Bad'}
+                    checked={report.powerSteeringFluid === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -1056,7 +1095,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="transmissionFluid"
                     id="excellent"
                     value="excellent"
-                    checked={report.transmissionFluid === 'excellent'}
+                    checked={report.transmissionFluid === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -1065,7 +1104,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="transmissionFluid"
                     id="good"
                     value="Good"
-                    checked={report.transmissionFluid === 'Good'}
+                    checked={report.transmissionFluid === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -1074,7 +1113,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="transmissionFluid"
                     id="bad"
                     value="Bad"
-                    checked={report.transmissionFluid === 'Bad'}
+                    checked={report.transmissionFluid === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -1089,7 +1128,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="engineMounts"
                     id="excellent"
                     value="excellent"
-                    checked={report.engineMounts === 'excellent'}
+                    checked={report.engineMounts === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -1098,7 +1137,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="engineMounts"
                     id="good"
                     value="Good"
-                    checked={report.engineMounts === 'Good'}
+                    checked={report.engineMounts === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -1107,7 +1146,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="engineMounts"
                     id="bad"
                     value="Bad"
-                    checked={report.engineMounts === 'Bad'}
+                    checked={report.engineMounts === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -1122,7 +1161,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="engineBelts"
                     id="excellent"
                     value="excellent"
-                    checked={report.engineBelts === 'excellent'}
+                    checked={report.engineBelts === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -1131,7 +1170,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="engineBelts"
                     id="good"
                     value="Good"
-                    checked={report.engineBelts === 'Good'}
+                    checked={report.engineBelts === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -1140,7 +1179,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="engineBelts"
                     id="bad"
                     value="Bad"
-                    checked={report.engineBelts === 'Bad'}
+                    checked={report.engineBelts === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -1155,7 +1194,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="radiator"
                     id="excellent"
                     value="excellent"
-                    checked={report.radiator === 'excellent'}
+                    checked={report.radiator === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -1164,7 +1203,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="radiator"
                     id="good"
                     value="Good"
-                    checked={report.radiator === 'Good'}
+                    checked={report.radiator === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -1173,7 +1212,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="radiator"
                     id="bad"
                     value="Bad"
-                    checked={report.radiator === 'Bad'}
+                    checked={report.radiator === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -1188,7 +1227,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="battery"
                     id="excellent"
                     value="excellent"
-                    checked={report.battery === 'excellent'}
+                    checked={report.battery === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -1197,7 +1236,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="battery"
                     id="good"
                     value="Good"
-                    checked={report.battery === 'Good'}
+                    checked={report.battery === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -1206,7 +1245,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="battery"
                     id="bad"
                     value="Bad"
-                    checked={report.battery === 'Bad'}
+                    checked={report.battery === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -1221,7 +1260,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="alternator"
                     id="excellent"
                     value="excellent"
-                    checked={report.alternator === 'excellent'}
+                    checked={report.alternator === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -1230,7 +1269,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="alternator"
                     id="good"
                     value="Good"
-                    checked={report.alternator === 'Good'}
+                    checked={report.alternator === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -1239,7 +1278,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="alternator"
                     id="bad"
                     value="Bad"
-                    checked={report.alternator === 'Bad'}
+                    checked={report.alternator === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -1254,7 +1293,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="fuelFilter"
                     id="excellent"
                     value="excellent"
-                    checked={report.fuelFilter === 'excellent'}
+                    checked={report.fuelFilter === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -1263,7 +1302,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="fuelFilter"
                     id="good"
                     value="Good"
-                    checked={report.fuelFilter === 'Good'}
+                    checked={report.fuelFilter === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -1272,7 +1311,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="fuelFilter"
                     id="bad"
                     value="Bad"
-                    checked={report.fuelFilter === 'Bad'}
+                    checked={report.fuelFilter === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -1287,7 +1326,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="fuelPump"
                     id="excellent"
                     value="excellent"
-                    checked={report.fuelPump === 'excellent'}
+                    checked={report.fuelPump === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -1296,7 +1335,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="fuelPump"
                     id="good"
                     value="Good"
-                    checked={report.fuelPump === 'Good'}
+                    checked={report.fuelPump === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -1305,20 +1344,18 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="fuelPump"
                     id="bad"
                     value="Bad"
-                    checked={report.fuelPump === 'Bad'}
+                    checked={report.fuelPump === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
                 </div>
-
-
               </div>
             </Collapsible>
           </div>
           <div className="diagnosisReportItem">
             <Collapsible trigger="Road Test">
               <div className="newDiagnosisItem">
-              <div>
+                <div>
                   <span>Starting</span>
                 </div>
                 <div className="reportItem">
@@ -1327,7 +1364,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="starting"
                     id="excellent"
                     value="excellent"
-                    checked={report.starting === 'excellent'}
+                    checked={report.starting === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -1336,7 +1373,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="starting"
                     id="good"
                     value="Good"
-                    checked={report.starting === 'Good'}
+                    checked={report.starting === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -1345,7 +1382,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="starting"
                     id="bad"
                     value="Bad"
-                    checked={report.starting === 'Bad'}
+                    checked={report.starting === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -1360,7 +1397,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="idling"
                     id="excellent"
                     value="excellent"
-                    checked={report.idling === 'excellent'}
+                    checked={report.idling === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -1369,7 +1406,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="idling"
                     id="good"
                     value="Good"
-                    checked={report.idling === 'Good'}
+                    checked={report.idling === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -1378,7 +1415,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="idling"
                     id="bad"
                     value="Bad"
-                    checked={report.idling === 'Bad'}
+                    checked={report.idling === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -1393,7 +1430,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="engineNoise"
                     id="excellent"
                     value="excellent"
-                    checked={report.engineNoise === 'excellent'}
+                    checked={report.engineNoise === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -1402,7 +1439,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="engineNoise"
                     id="good"
                     value="Good"
-                    checked={report.engineNoise === 'Good'}
+                    checked={report.engineNoise === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -1411,7 +1448,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="engineNoise"
                     id="bad"
                     value="Bad"
-                    checked={report.engineNoise === 'Bad'}
+                    checked={report.engineNoise === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -1426,7 +1463,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="throttle"
                     id="excellent"
                     value="excellent"
-                    checked={report.throttle === 'excellent'}
+                    checked={report.throttle === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -1435,7 +1472,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="throttle"
                     id="good"
                     value="Good"
-                    checked={report.throttle === 'Good'}
+                    checked={report.throttle === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -1444,7 +1481,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="throttle"
                     id="bad"
                     value="Bad"
-                    checked={report.throttle === 'Bad'}
+                    checked={report.throttle === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -1459,7 +1496,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="transmissionShift"
                     id="excellent"
                     value="excellent"
-                    checked={report.transmissionShift === 'excellent'}
+                    checked={report.transmissionShift === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -1468,7 +1505,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="transmissionShift"
                     id="good"
                     value="Good"
-                    checked={report.transmissionShift === 'Good'}
+                    checked={report.transmissionShift === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -1477,7 +1514,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="transmissionShift"
                     id="bad"
                     value="Bad"
-                    checked={report.transmissionShift === 'Bad'}
+                    checked={report.transmissionShift === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -1492,7 +1529,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="accelerating"
                     id="excellent"
                     value="excellent"
-                    checked={report.accelerating === 'excellent'}
+                    checked={report.accelerating === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -1501,7 +1538,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="accelerating"
                     id="good"
                     value="Good"
-                    checked={report.accelerating === 'Good'}
+                    checked={report.accelerating === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -1510,7 +1547,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="accelerating"
                     id="bad"
                     value="Bad"
-                    checked={report.accelerating === 'Bad'}
+                    checked={report.accelerating === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -1525,7 +1562,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="steeringAlignment"
                     id="excellent"
                     value="excellent"
-                    checked={report.steeringAlignment === 'excellent'}
+                    checked={report.steeringAlignment === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -1534,7 +1571,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="steeringAlignment"
                     id="good"
                     value="Good"
-                    checked={report.steeringAlignment === 'Good'}
+                    checked={report.steeringAlignment === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -1543,7 +1580,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="steeringAlignment"
                     id="bad"
                     value="Bad"
-                    checked={report.steeringAlignment === 'Bad'}
+                    checked={report.steeringAlignment === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -1558,7 +1595,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="braking"
                     id="excellent"
                     value="excellent"
-                    checked={report.braking === 'excellent'}
+                    checked={report.braking === "Excellent"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="excellent">Excellent</label>
@@ -1567,7 +1604,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="braking"
                     id="good"
                     value="Good"
-                    checked={report.braking === 'Good'}
+                    checked={report.braking === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -1576,7 +1613,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="braking"
                     id="bad"
                     value="Bad"
-                    checked={report.braking === 'Bad'}
+                    checked={report.braking === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
@@ -1590,7 +1627,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     type="radio"
                     name="abs"
                     id="excellent"
-                    checked={report.abs === 'excellent'}
+                    checked={report.abs === "Excellent"}
                     value="excellent"
                     onChange={onValueChange}
                   />
@@ -1600,7 +1637,7 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="abs"
                     id="good"
                     value="Good"
-                    checked={report.abs === 'Good'}
+                    checked={report.abs === "Good"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="good">Good</label>
@@ -1609,18 +1646,20 @@ export default function DiagnosticReport({ currentPushToken, reqData }) {
                     name="abs"
                     id="bad"
                     value="Bad"
-                    checked={report.abs === 'Bad'}
+                    checked={report.abs === "Bad"}
                     onChange={onValueChange}
                   />
                   <label htmlFor="bad">Bad</label>
                 </div>
-
-
               </div>
             </Collapsible>
           </div>
           <div>
-            <input type="submit" value={`${reportAvailable ? "Edit report" : "Submit"}`} onClick={onSubmitReport} />
+            <input
+              type="submit"
+              value={`${reportAvailable ? "Edit report" : "Submit"}`}
+              onClick={onSubmitReport}
+            />
           </div>
         </form>
       </div>
