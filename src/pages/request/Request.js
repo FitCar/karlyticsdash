@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import "./request.css";
 import firebaseApp from "../../firebase";
 import DiagnosticReport from "../../components/diagnosticReport/DiagnosticReport";
@@ -10,6 +10,7 @@ const firestore = firebaseApp.firestore();
 
 export default function Request() {
   const id = useParams();
+  const { search } = useLocation();
 
   const [status, setstatus] = useState("");
   const [reqData, setreqData] = useState(null);
@@ -69,10 +70,46 @@ export default function Request() {
     });
   };
 
-  const sendHealthScore = (e) => {
+  const sendHealthScore = async (e) => {
     e.preventDefault();
+    const param_data = search.split("=")[1];
 
-    //do something ...
+    let sum =
+      Number.parseInt(healthScoreInputs.inspectionVal) +
+      Number.parseInt(healthScoreInputs.diagnosticVal);
+
+    if (!sum) return;
+
+    if (search.split("=")[0] === "?carID") {
+      await firestore
+        .collection("Garage")
+        .doc(id.customerId)
+        .collection("Garage")
+        .doc(search.split("=")[1])
+        .update({
+          healthScore: sum / 2,
+        });
+    } else {
+      await firestore
+        .collection("Garage")
+        .doc(id.customerId)
+        .collection("Garage")
+        .where("Model", "==", param_data.split("%20")[1])
+        .where("Make", "==", param_data.split("%20")[0])
+        .get()
+        .then((snapshot) => {
+          let carID = snapshot.docs.map((doc) => doc.id)[0];
+
+          firestore
+            .collection("Garage")
+            .doc(id.customerId)
+            .collection("Garage")
+            .doc(carID)
+            .update({
+              healthScore: sum / 2,
+            });
+        });
+    }
   };
 
   const handleInputChange = (e) => {
@@ -81,6 +118,8 @@ export default function Request() {
       [e.target.name]: e.target.value,
     });
   };
+
+  console.log();
 
   return (
     <div className="request">

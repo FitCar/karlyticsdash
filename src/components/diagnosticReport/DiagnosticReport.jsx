@@ -86,8 +86,6 @@ export default function DiagnosticReport({
     return setloading(false);
   }, []);
 
-  console.log(score);
-
   const onSubmitReport = (e) => {
     e.preventDefault();
     const reportRef = firestore

@@ -34,10 +34,11 @@ export default function UserRequests() {
       });
   }, []);
 
-
   return (
     <div className="userRequests">
-      {!requests.length && <p className="text-blue-500">No requests made yet</p> }
+      {!requests.length && (
+        <p className="text-blue-500">No requests made yet</p>
+      )}
 
       {requests.map((requests) => {
         return (
@@ -49,6 +50,7 @@ export default function UserRequests() {
             requestId={requests.key}
             status={requests.status}
             customerId={requests.requestId}
+            carId={requests.CarId}
           />
         );
       })}
