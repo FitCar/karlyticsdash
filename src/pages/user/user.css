@@ -1,10 +1,75 @@
 .user {
   flex: 4;
+  display: flex;
+  flex-direction: column;
+  height: 90vh;
+  background-color: whitesmoke;
 }
 
 .userPages {
-  background-color: yellow;
-  height: 50vh;
-  width: 50vw;
+  flex: 1;
+  padding: 0.8rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
+.userDetails {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.userDetails > h3 {
+  font-size: 2rem;
+  font-weight: 500;
+  margin: 0;
+  color: darkslategray;
+}
+
+.userDetails > h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.userDetails > p {
+  font-size: 0.8rem;
+  color: slategray;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.CarInfo {
+  border-top: 1px solid lightgray;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid lightgray;
+}
+
+.CarInfo > span {
+  display: flex;
+  align-items: center;
+}
+
+.carServiceInfo {
+  font-size: 15;
+  font-weight: 500;
+}
+
+.MoreUserInfo {
+  width: 100%;
+  max-width: 40rem;
+  display: flex;
+}
+
+.MoreUserInfo > div {
+  width: 50%;
+}
+
+.PlanInfo {
+  padding-left: 0.5rem;
+  border-left: 1px solid lightgray;
+}
