@@ -2,8 +2,6 @@ import { Link } from "react-router-dom";
 import "./userHeader.css";
 
 export default function UserHeader({userId}) {
-
-  console.log(userId)
   return (
     <div className="userHeader">
       <ul className="userHeaderButtonsList">
@@ -12,11 +10,13 @@ export default function UserHeader({userId}) {
             <li>Dashboard</li>
           </div>
         </Link>
+
         <Link to={"/userRequests/" + userId.userId}>
           <div className="userHeaderButtons">
             <li>Requests</li>
           </div>
         </Link>
+        
         <div className="userHeaderButtons">
           <li>Messages</li>
         </div>
